@@ -1,19 +1,19 @@
-import { useState } from 'react';
 import {
   Box,
   Button,
   FormControl,
   FormLabel,
+  HStack,
   Input,
-  Textarea,
   Select,
-  VStack,
   Tag,
   TagCloseButton,
   TagLabel,
-  HStack,
+  Textarea,
+  VStack,
 } from '@chakra-ui/react';
-import axios from 'axios';
+import { useState } from 'react';
+import clientQuery from 'services/api';
 
 export default function AddCategoryForm() {
   const [formData, setFormData] = useState({
@@ -50,17 +50,14 @@ export default function AddCategoryForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        'http://localhost:8386/api/category/add',
-        {
-          img: formData.img,
-          parent: formData.parent,
-          children: formData.children,
-          productType: formData.productType,
-          description: formData.description,
-          status: formData.status,
-        },
-      );
+      const response = await clientQuery.post('/category/add', {
+        img: formData.img,
+        parent: formData.parent,
+        children: formData.children,
+        productType: formData.productType,
+        description: formData.description,
+        status: formData.status,
+      });
       console.log('Category added:', response.data);
       alert('Danh mục đã được thêm thành công!');
       setFormData({

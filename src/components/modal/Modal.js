@@ -16,7 +16,6 @@ export default function ModalComponent({
   size = 'xxl',
   children,
 }) {
-  console.log('🚀 ~ ModalComponent ~ children:', children);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
