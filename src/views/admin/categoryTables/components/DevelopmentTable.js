@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Flex,
-  Progress,
   Table,
   Tbody,
   Td,
@@ -25,12 +24,11 @@ import {
 // Custom components
 import Card from 'components/card/Card';
 import AddCategoryForm from 'components/formControl/CategoryForm';
-import { AndroidLogo, AppleLogo, WindowsLogo } from 'components/icons/Icons';
 import ModalComponent from 'components/modal/Modal';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { setCategories } from '../../../../redux/Slice/categorySlice';
+import { useDispatch, useSelector } from 'react-redux';
 import clientQuery from 'services/api';
+import { setCategories } from '../../../../redux/Slice/categorySlice';
 // Assets
 
 const columnHelper = createColumnHelper();
@@ -41,9 +39,11 @@ export default function ComplexTable(props) {
   const [sorting, setSorting] = React.useState([]);
   const dispatch = useDispatch();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
-  const iconColor = useColorModeValue('secondaryGray.500', 'white');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
   let defaultData = tableData;
+  const [categoryId, setCategoryId] = React.useState('');
+  const categoriesData = useSelector((state) => state.category);
+  console.log('🚀 ~ ComplexTable ~ categoriesData:', categoriesData);
 
   const columns = [
     columnHelper.accessor('parent', {
@@ -84,8 +84,8 @@ export default function ComplexTable(props) {
         </Text>
       ),
     }),
-    columnHelper.accessor('createdAt', {
-      id: 'createdAt',
+    columnHelper.accessor('actions', {
+      id: 'actions',
       header: () => (
         <Text
           justifyContent="space-between"
@@ -96,15 +96,32 @@ export default function ComplexTable(props) {
           ACTIONS
         </Text>
       ),
-      cell: (info) => (
-        <Flex>
-          <Button>Edit</Button>
-          <Button color={'red'}>Delete</Button>
-        </Flex>
-      ),
+      cell: (info) => {
+        const category = info.row.original;
+
+        return (
+          <Flex>
+            <ModalComponent
+              title={'Edit Category'}
+              label={'Edit'}
+              size={'lg'}
+              setId={() => setCategoryId(category._id)}
+            >
+              <AddCategoryForm categoryId={categoryId} />
+            </ModalComponent>
+            <Button color={'red'} marginLeft="3">
+              Delete
+            </Button>
+          </Flex>
+        );
+      },
     }),
   ];
   const [data, setData] = React.useState(() => [...defaultData]);
+
+  React.useEffect(() => {
+    if (categoriesData) setData(categoriesData);
+  }, [categoriesData]);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -115,9 +132,7 @@ export default function ComplexTable(props) {
           ...item,
         }));
         delete formatRes._id;
-        console.log('🚀 ~ fetchData ~ formatRes:', formatRes);
         dispatch(setCategories(response.result));
-        setData(response.result);
       } catch (error) {
         console.log(error);
       }

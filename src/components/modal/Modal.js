@@ -15,12 +15,18 @@ export default function ModalComponent({
   label = '',
   size = 'xxl',
   children,
+  setId = () => {},
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const openModal = () => {
+    onOpen();
+    setId();
+  };
+
   return (
     <>
-      <Button onClick={onOpen}>{label}</Button>
+      <Button onClick={openModal}>{label}</Button>
       <Modal isOpen={isOpen} onClose={onClose} size={size}>
         <ModalOverlay />
         <ModalContent>

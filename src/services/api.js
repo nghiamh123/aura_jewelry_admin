@@ -13,6 +13,14 @@ const clientQuery = {
     });
   },
 
+  patch: async (endpoint, data, options = {}) => {
+    return await request(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      ...options,
+    });
+  },
+
   put: async (endpoint, data, options = {}) => {
     return await request(endpoint, {
       method: 'PUT',
